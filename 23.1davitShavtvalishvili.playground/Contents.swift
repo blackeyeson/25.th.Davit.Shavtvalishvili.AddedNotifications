@@ -19,14 +19,10 @@ struct Details: Codable {
 }
 
 let apiKey = "4d5c910865a5edc352e68d5a59651d23"
-let urlString1 = "https://api.themoviedb.org/3/tv/top_rated?api_key=\(apiKey)&language=en-US&page=1"
-var urlString2 = ""
-var urlString3 = ""
 var id1 = 0
 
 
 actor CustomEvent {
-
 
     func getRandomId() async -> Int {
         do {

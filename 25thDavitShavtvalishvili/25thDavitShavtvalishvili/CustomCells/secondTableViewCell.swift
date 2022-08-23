@@ -43,26 +43,22 @@ class secondTableViewCell: UITableViewCell {
     }
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         if firstPage && firstPageDelegate != nil {
-            let ac = UIAlertController(title: fileName, message: nil, preferredStyle: .alert)
-            ac.addTextField()
+            let fileUrl = self.url!.appendingPathComponent(self.fileName)
+            var content = ""
             
+            do { content = try String(contentsOf: fileUrl, encoding: .utf8) } catch { print(error) }
+            let ac = UIAlertController(title: fileName, message: content, preferredStyle: .alert)
+            ac.addTextField()
             let submitAction = UIAlertAction(title: "Save & Overwrite", style: .default) { [unowned ac] _ in
                 let answer = ac.textFields![0].text ?? ""
-                do {
-                    let fileUrl = self.url!.appendingPathComponent(self.fileName)
-                    try answer.write(to: fileUrl, atomically: false, encoding: .utf8)
-                }
-                catch {print(error)}
+                do { try answer.write(to: fileUrl, atomically: false, encoding: .utf8) } catch { print(error) }
             }
             let cancelAction = UIAlertAction(title: "Cancel", style: .default)
-            
             ac.addAction(submitAction)
             ac.addAction(cancelAction)
-            
             firstPageDelegate!.present(ac, animated: true)
         } else {
             if delegate != nil && fileName != "" {
-                
                 delegate!.chosenFile = fileName
                 delegate!.textView.text = "You Have Selected \(fileName)"
             }

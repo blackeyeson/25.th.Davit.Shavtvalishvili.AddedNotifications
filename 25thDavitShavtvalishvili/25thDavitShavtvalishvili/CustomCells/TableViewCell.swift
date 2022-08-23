@@ -28,23 +28,18 @@ class TableViewCell: UITableViewCell {
             folderName = delegate!.arrayOfDirs[index!]
             name.text = folderName
         }
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
         self.addGestureRecognizer(tap)
     }
     
-    @IBAction func browseButton(_ sender: Any) {
-        print("B")
-        if delegate != nil {
-            delegate!.presentFilesVC(folder: folderName)
-        }
-    }
+    @IBAction func browseButton(_ sender: Any) { if delegate != nil { delegate!.presentFilesVC(folder: folderName) } }
+    
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         if delegate != nil {
             delegate!.url = delegate!.manager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(folderName)
-            let a = delegate!.manager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(folderName)
             delegate!.previewLabel.text = folderName
             delegate!.fillFilesArr()
-            print("tap")
         }
     }
 }

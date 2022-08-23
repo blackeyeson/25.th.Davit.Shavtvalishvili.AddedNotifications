@@ -8,7 +8,7 @@
 import UIKit
 
 class FilesViewController: UIViewController {
-
+    
     @IBOutlet var textField: UITextField!
     @IBOutlet var textView: UITextView!
     @IBOutlet var tableView: UITableView!
@@ -23,16 +23,11 @@ class FilesViewController: UIViewController {
         super.viewDidLoad()
         mainTableViewConfiguration()
         fillFilesArr()
-        
     }
     
-    func config() {
-        url = manager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(folderName)
-    }
+    func config() { url = manager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(folderName) }
     
-    @IBAction func `return`(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
+    @IBAction func `return`(_ sender: Any) { self.dismiss(animated: true, completion: nil) }
     
     @IBAction func deleteButton(_ sender: Any) {
         if chosenFile != "" {
@@ -67,15 +62,23 @@ class FilesViewController: UIViewController {
     }
     
     @IBAction func createButton(_ sender: Any) {
-        if textField.text != nil && textField.text != "" {
-            var fileUrl = url!.appendingPathComponent(textField.text!)
-            fileUrl.appendPathExtension("text")
-            let textData = "".data(using: .utf8)!
-            manager.createFile(atPath: fileUrl.path,
-                                            contents: textData,
-                                            attributes: nil)
-            textField.text = ""
-            fillFilesArr()
+        if textField.text != nil && textField.text != "" && delegate != nil{
+            let ac = UIAlertController(title: textField.text!, message: nil, preferredStyle: .alert)
+            ac.addTextField()
+            
+            let submitAction = UIAlertAction(title: "Save", style: .default) { [unowned ac] _ in
+                let answer = ac.textFields![0].text ?? ""
+                var fileUrl = self.url!.appendingPathComponent(self.textField.text!)
+                fileUrl.appendPathExtension("text")
+                let textData = answer.data(using: .utf8)!
+                self.manager.createFile(atPath: fileUrl.path, contents: textData, attributes: nil)
+                self.textField.text = ""
+                self.fillFilesArr()
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .default)
+            ac.addAction(submitAction)
+            ac.addAction(cancelAction)
+            present(ac, animated: true)
         }
     }
 }
@@ -87,18 +90,14 @@ extension FilesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { arrayOfFiles.count }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "secondTableViewCell", for: indexPath) as! secondTableViewCell
         let i = indexPath[1]
-        
         cell.index = i
         cell.delegate = self
         cell.config()
-        
-        
         return cell
     }
-
+    
     func mainTableViewConfiguration() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -109,29 +108,19 @@ extension FilesViewController: UITableViewDelegate, UITableViewDataSource {
     func fillFilesArr() {
         if url != nil {
             do {
-                // Get the document directory url
                 let documentDirectory = url!
-                print("documentDirectory", documentDirectory.path)
-                // Get the directory contents urls (including subfolders urls)
                 let directoryContents = try FileManager.default.contentsOfDirectory(
                     at: documentDirectory,
                     includingPropertiesForKeys: nil
                 )
-                
-                print("directoryContents:", directoryContents.map { $0.localizedName ?? $0.lastPathComponent })
-                
+                                
                 arrayOfFiles = []
-                
                 for url in directoryContents {
                     print(url.localizedName ?? url.lastPathComponent)
                     arrayOfFiles += [String(url.localizedName ?? url.lastPathComponent)]
                 }
-            } catch {
-                print(error)
-            }
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+            } catch { print(error) }
+            DispatchQueue.main.async { self.tableView.reloadData() }
         }
     }
 }

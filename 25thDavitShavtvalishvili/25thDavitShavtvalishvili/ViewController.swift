@@ -130,6 +130,4 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension URL {
-    var localizedName: String? { (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName }
-}
+extension URL { var localizedName: String? { (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName } }

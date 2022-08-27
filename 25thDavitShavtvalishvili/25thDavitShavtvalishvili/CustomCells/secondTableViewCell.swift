@@ -52,6 +52,7 @@ class secondTableViewCell: UITableViewCell {
             let submitAction = UIAlertAction(title: "Save & Overwrite", style: .default) { [unowned ac] _ in
                 let answer = ac.textFields![0].text ?? ""
                 do { try answer.write(to: fileUrl, atomically: false, encoding: .utf8) } catch { print(error) }
+                LocalLocationManager.register(notification: LocalNotification(id: UUID().uuidString , title: self.fileName, message: "note overwritten 10 secons ago"), duration: 10, repeats: false, userInfo: ["defaultUser": "no data"])
             }
             let cancelAction = UIAlertAction(title: "Cancel", style: .default)
             ac.addAction(submitAction)

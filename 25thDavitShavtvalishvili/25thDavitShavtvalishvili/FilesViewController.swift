@@ -58,6 +58,7 @@ class FilesViewController: UIViewController {
                 try text.write(to: fileUrl, atomically: false, encoding: .utf8)
             }
             catch {print(error)}
+            LocalLocationManager.register(notification: LocalNotification(id: UUID().uuidString , title: chosenFile, message: "file saved 10 seconds ago"), duration: 10, repeats: false, userInfo: ["defaultUser": "no data"])
         }
     }
     
@@ -74,6 +75,7 @@ class FilesViewController: UIViewController {
                 self.manager.createFile(atPath: fileUrl.path, contents: textData, attributes: nil)
                 self.textField.text = ""
                 self.fillFilesArr()
+                LocalLocationManager.register(notification: LocalNotification(id: UUID().uuidString , title: self.textField.text!, message: "file created 10 seconds ago"), duration: 10, repeats: false, userInfo: ["defaultUser": "no data"])
             }
             let cancelAction = UIAlertAction(title: "Cancel", style: .default)
             ac.addAction(submitAction)
